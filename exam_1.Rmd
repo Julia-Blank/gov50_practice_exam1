@@ -5,6 +5,68 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
 ```
 
+```{r, q1}
+colleges <- tibble(read_csv(file = "raw_data/college_scorecard.csv", 
+                            col_types = cols( .default = col_double(),
+                                              name = col_character(),
+                                              state = col_character(),
+                                              region = col_character(),
+                                              locale = col_character(),
+                                              ug_enrollment = col_character(),
+                                              completion_rate = col_character()
+                                              )))
+q1 <- colleges %>%
+  select(name, pell_grant, state) %>%
+  filter(state == "NJ") %>%
+  arrange(desc(pell_grant)) %>%
+  slice(1:10)
+q1
+  
+  
+
+
+```
+
+```{r, q2}
+regional_religion <- colleges %>%
+  group_by(region) %>%
+  summarize(religious_num = sum(religious_affiliation, na.rm = TRUE), 
+            religious_prop = religious_num/n(),
+            .groups = "drop") %>%
+  arrange(desc(religious_prop))
+regional_religion
+
+#what does the n() argument do?
+
+```
+
+```{r}
+regional_religion %>%
+  slice(1:9) %>%
+  ggplot(aes(x = fct_reorder(region, religious_prop), y = religious_prop)) +
+  geom_bar(stat = "identity", fill = "#69A297") +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Proportion of Colleges in Each \n US Region with a Religious Affiliation",
+       x = "Religious Proportion",
+       y = "Region") +
+  scale_x_discrete(breaks = c("Plains", "Great Lakes", "Southeast", "Southwest", 
+                             "Far West", "Mideast", "Rocky Mountains", 
+                             "New England", "US Outlying Areas"), 
+                   labels = c("Plains", "Great Lakes", "Southeast", "Southwest", 
+                             "Far West", "Mideast", "Rocky Mountains", 
+                             "New England", "US Outlying Areas")) +
+  scale_y_continuous(labels = c("0%", "10%", "20%", "30%", "40%", "50%"))
+
+#how do i get it to go descending same way as example
+#what does fct reorder do?
+```
+
+```{r}
+
+```
 
